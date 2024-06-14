@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: local("Material Icons"), local("MaterialIcons-Regular"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.ttf") format("truetype"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff2") format("woff2"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff") format("woff"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.eot");
+  }
+  .materialIcons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 22px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
+  }
+  .flipContainer {
+    cursor: pointer;
+    letter-spacing: .5px;
+    color: #FFF;
+    font-family: Montserrat, "Roboto", sans-serif;
+    /* transition: .3s ease-out; */
+    margin-bottom: -1px;
+    border-bottom-color: #fd7b8b;
+    display: flow-root;
+    height: 20px;
+    background-color: #fd7b8b;
+  }
+  .flipContainer {
+    text-align: center;
+  }
+ .flipContainer {
+    padding: 0;
+    border: solid 1px #c3c3c3;
+  }
+  .floatRight {
+    float: right !important;
+}
+.floatLeft {
+    float: left !important;
+}

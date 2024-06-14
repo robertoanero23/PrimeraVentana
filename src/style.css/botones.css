@@ -1,0 +1,62 @@
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: local("Material Icons"), local("MaterialIcons-Regular"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.ttf") format("truetype"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff2") format("woff2"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff") format("woff"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.eot");
+  }
+  .materialIcons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 22px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
+  }
+
+  .btn {
+    display: inline-block;
+    font-size: 1rem;
+    /*box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 2px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 2px rgba(0, 0, 0, 0.2);*/
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 4px 0 rgba(0, 0, 0, 0.12), 0 1px 1px 1px rgba(0, 0, 0, 0.2);
+    background-color: #F8485E;
+    color: #fff;
+    padding: 0.375rem 0.75rem;
+    margin-right: 0.5rem;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+   margin: 1rem;
+  }
+  
+  
+    .btn:disabled, .btn[disabled] {
+        background-color: silver;
+        color: #fff;
+    }
+  
+  a.btn[disabled] {
+    pointer-events: none;
+    color: #fff;
+  }
+  
+    a.btn[disabled]:hover {
+        pointer-events: none;
+        color: #fff;
+    }
+  
+  .btn[disabled], .btn[disabled]:hover, .btn[disabled]:focus, .btn[disabled]:active {
+    cursor: default;
+  }

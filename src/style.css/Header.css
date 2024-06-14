@@ -1,0 +1,79 @@
+body {
+        margin: 0;
+        font-family: -apple-system, Montserrat, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #000000;
+        text-align: left;
+        background-color: #fff;
+      }
+
+.header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color:#F8485E;
+        width: 100%;
+        color: white;
+        height: 3rem;
+        gap: 1rem;
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1030;
+       box-shadow:  0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+        
+}
+.imagen{
+        position: fixed;   
+        height: 3rem;
+}
+.Nombres{
+        display: flex;
+        align-items:center ;
+        justify-content: center;
+        margin-right: 0.5rem;
+}
+
+.Avatar{
+        line-height: 50px;
+        width: 28px;
+        white-space: nowrap;
+        border-radius: 1000px;
+        vertical-align: bottom;
+        margin-right: 1rem;
+
+}
+.Segundo{
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: space-around; 
+        right: 0;
+}
+@font-face {
+        font-family: 'Material Icons';
+        font-style: normal;
+        font-weight: 400;
+        src: local("Material Icons"), local("MaterialIcons-Regular"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.ttf") format("truetype"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff2") format("woff2"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff") format("woff"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.eot");
+      }
+      .materialIcons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 22px;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: 'liga';
+        margin-right: 2rem;
+      }

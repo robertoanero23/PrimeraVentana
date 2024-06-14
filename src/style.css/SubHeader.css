@@ -1,0 +1,162 @@
+body {
+    margin: 0;
+    font-family: -apple-system, Montserrat, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #000000;
+    text-align: left;
+    background-color: #fff;
+  }
+  :root {
+    /*--breadcrumb-theme-1: #8C5A60;*/
+    --breadcrumb-theme-1: #fca2ae;
+    --breadcrumb-theme-2: #fff;
+    --breadcrumb-theme-3: white;
+    --breadcrumb-theme-4: black;
+  }
+  
+  
+  .breadCrumbCustom {
+    height: 51px !important;
+    margin-bottom: 0 !important;
+    display: block;
+    /* flex-wrap: nowrap !important; */
+  }
+  a:not([href]):not([tabindex]) {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  
+  .breadCrumb {
+    margin-top: 5rem;
+    justify-content: flex-start;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    list-style: none;
+    border-radius: 0.25rem;
+  }
+
+  
+
+    .breadCrumbStep:first-child {
+        border-radius: 5px 0 0 5px;
+        /*background-color:white;*/
+        padding:0 10px 0 10px;
+    }
+  
+        .breadCrumbStep:first-child::before {
+          left: 14px;
+        }
+  
+    .breadCrumbStep:last-child {
+        border-radius: 0 5px 5px 0;
+        padding-right: 20px;
+        border: 1px solid var(--breadcrumb-theme-2);
+    }
+        .breadCrumbStep:last-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left:-14px;
+            width: 28px;
+            height: 26px;
+            transform: scale(0.707) rotate(134deg);
+            z-index: 1;
+            border-radius: 0 5px 50px 0;
+            transition: background 0.5s;
+            border-left: 1.5px solid var(--breadcrumb-theme-2);
+            border-top: 1.5px solid var(--breadcrumb-theme-1);
+          }
+  
+  
+        .breadCrumbStep:last-child::after {
+            content: none;
+        }
+  
+    .breadCrumbStep::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right:-9px;
+        width: 26px;
+        height: 26px;
+        transform: scale(0.707) rotate(45deg);
+        z-index: 1;
+        border-radius: 0 5px 0 50px;
+        background: var(--breadcrumb-theme-3);
+        transition: background 0.5s;
+        box-shadow: 2px -2px 0 2px var(--breadcrumb-theme-2);
+    }
+  
+  .breadCrumbStepActive,
+  .breadCrumbStepActive::after {
+    background: var(--breadcrumb-theme-1);
+  }
+  
+  .breadCrumbStepActive {
+    color: var(--breadcrumb-theme-2);
+  }
+  .breadCrumbStep:last-child {
+    border-radius: 0 5px 5px 0;
+    padding-right: 20px;
+    border: 1px solid var(--breadcrumb-theme-1);
+  }
+  
+    .breadCrumbStepActive::before {
+        color: var(--breadcrumb-theme-2);
+    }
+    .breadCrumbStep {
+      text-decoration: none;
+      outline: none;
+      display: block;
+      float: left;
+      font-size: 12px;
+      line-height: 26px;
+      padding: 0 10px 0 30px;
+      position: relative;
+      background: var(--breadcrumb-theme-2);
+      color: var(--breadcrumb-theme-2);
+      transition: background 0.5s;
+  }
+  .breadCrumbStepActive, .breadCrumbStepActive::after {
+    background: var(--breadcrumb-theme-1);
+    
+    
+  }
+  
+  
+    .iconEncabezadoBody {
+      width: 20px;
+      height: 20px;
+  }
+  
+  img {
+    vertical-align: middle;
+    border-style: none;
+  }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  
+  img {
+    overflow-clip-margin: content-box;
+    overflow: clip;
+  }
+
+  .row {
+    margin-top: 20px;
+    display: flex;
+    margin-bottom: 40px;
+    font-size: 11px !important;
+    border: 1px solid #dee2e6 !important;
+    align-items: center;
+    justify-content: space-between;
+  
+  }
+
+
