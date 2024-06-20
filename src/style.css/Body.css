@@ -20,6 +20,7 @@
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'liga';
+  
   }
   .flipContainer {
     cursor: pointer;
@@ -46,3 +47,7 @@
 .floatLeft {
     float: left !important;
 }
+
+
+
+

@@ -4,7 +4,7 @@
     font-weight: 400;
     src: local("Material Icons"), local("MaterialIcons-Regular"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.ttf") format("truetype"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff2") format("woff2"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.woff") format("woff"), url("/src/fonts/material-design-icons/MaterialIcons-Regular.eot");
   }
-  .materialIcons {
+  .materialIcons2 {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
@@ -20,6 +20,8 @@
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'liga';
+    margin-right: 10px;
+    align-items: center;
   }
 
   .btn {
@@ -39,6 +41,9 @@
     border-radius: 0.25rem;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
    margin: 1rem;
+  }
+  .btn:hover {
+    color: black;
   }
   
   
@@ -60,3 +65,74 @@
   .btn[disabled], .btn[disabled]:hover, .btn[disabled]:focus, .btn[disabled]:active {
     cursor: default;
   }
+
+  .SearchButton{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    border: 1px solid #ccc;
+    
+    }
+
+  .searchButtonToggle {
+    padding: 5px;
+    cursor: pointer;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-top-right-radius:  4px;
+    border-bottom-right-radius: 4px;
+    position: absolute;
+    height: 30px;
+}
+
+
+.customButton{
+  padding: 10px 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px #999;
+  margin-bottom: -1rem;
+}
+.searchInput:hover {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #80bdff;
+  outline: 0;
+}
+.searchInput2:hover {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: #80bdff;
+  outline: 0;
+}
+.searchInput{
+  background: white;
+  box-shadow: none;
+  border: 1px solid #ced4da;
+  font-weight: 400;
+  font-size: 11px;
+  height: 30px;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+.searchInput2{
+  background: white;
+  box-shadow: none;
+  border: 1px solid #ced4da;
+  font-weight: 400;
+  font-size: 11px;
+  height: 30px;
+  width: 20rem;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+.label{
+  color: #000000;
+  margin-bottom: 0.3rem;
+  font-size: 11px;
+}
+
+.customButton:active {
+  background-color: #444;
+  box-shadow: #444;
+  transform: translateY(2px);
+}
