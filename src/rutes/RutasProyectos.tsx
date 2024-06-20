@@ -18,11 +18,11 @@ export async function getcodprojects(codProyecto:string) {
 }
 
 
-export async function getClientes() {
+export async function getClientes(nombreCliente:string) {
   let data2 = null;
   
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/cliente/getallclientsname');
+    const response = await fetch(`http://127.0.0.1:8000/api/cliente/getallclientsname/${nombreCliente}`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -53,7 +53,7 @@ export async function getBoss(idUsuario:string) {
     console.error('Error fetching data:', error);
   }
 
-  console.log(data3);
+  //console.log(data3);
   return data3;
 }
 
@@ -72,6 +72,26 @@ export async function getPMO(idUsuario:string) {
     console.error('Error fetching data:', error);
   }
 
-  console.log(data4);
+  //console.log(data4);
+  return data4;
+}
+
+
+export async function getAllProjectsByClientName(idUsuario:string) {
+  let data4 = null;
+  
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/proyecto/getallprojectsbyclientname/${idUsuario}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const jsonData = await response.json();
+    const firstFiveElements = jsonData.slice();
+    data4 = firstFiveElements;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  //console.log(data4);
   return data4;
 }
