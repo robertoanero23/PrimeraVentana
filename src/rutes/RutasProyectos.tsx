@@ -95,3 +95,60 @@ export async function getAllProjectsByClientName(idUsuario:string) {
   //console.log(data4);
   return data4;
 }
+export async function getClientName(clientName:string) {
+  let data = null;
+  
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/proyecto/getallprojectsbyclientname/${clientName}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const jsonData = await response.json();
+    const firstFiveElements = jsonData.slice();
+    data = firstFiveElements;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  console.log(data);
+  return data;
+}
+
+
+export async function getIdClient(idCliente:string) {
+  let data = null;
+  
+  try {
+    const response = await fetch(`http://localhost:8000/api/cliente/getallclientsbyid/${idCliente}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const jsonData = await response.json();
+    const firstFiveElements = jsonData.slice();
+    data = firstFiveElements;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  console.log(data);
+  return data;
+}
+
+export async function getIdproyecto(id_proyecto:string) {
+  let data = null;
+  
+  try {
+    const response = await fetch(`http://localhost:8000/api/grado-avance/getalldegreeprogressbyprojectid/${id_proyecto}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const jsonData = await response.json();
+    const firstFiveElements = jsonData.slice();
+    data = firstFiveElements;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+
+  console.log(data);
+  return data;
+}

@@ -1,18 +1,18 @@
-import Botones from "./Components/Botones"
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Botones from './Components/Botones';
+import GradosAvance from './Components/gradosAvance';
+// Importa tu componente GradosAvance
 
-
-
-
-
-function App() {
-
-
+const App: React.FC = () => {
   return (
-    <>
-    <div><Botones/></div>
-     
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/" element={<Botones />} />
+        <Route path="/gradosAvance/:idProyecto" element={<GradosAvance />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;

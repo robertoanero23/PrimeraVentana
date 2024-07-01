@@ -86,7 +86,23 @@
     height: 30px;
 }
 .tabla{
-  background-color: #F8485E;
+  border-collapse: collapse;
+  text-indent: initial;
+    border-spacing: 2px;
+    width: 100%;
+
+}
+th {
+  padding-bottom: 0px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 10px;
+  display: table-cell;
+  vertical-align: middle;
+  border-radius: 0px;
+  padding: 0px;
+  font-family: -apple-system, Montserrat, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  color: #000000;
 }
 
 .customButton{

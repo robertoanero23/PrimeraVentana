@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import Body from "./Body";
 import "../style.css/botones.css";
-import { getBoss, getClientes, getPMO, getcodprojects, getAllProjectsByClientName } from "../rutes/RutasProyectos";
+import { getBoss, getClientes, getPMO, getcodprojects, getClientName, getIdClient } from "../rutes/RutasProyectos";
 
 interface Proyecto {
   idProyecto: number;
@@ -23,13 +24,15 @@ const Botones: React.FC = () => {
   const [inputValueCliente, setInputValueCliente] = useState('');
   const [resultados, setResultados] = useState<Proyecto[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [arrayJefesProyecto, setArrayJefesProyecto] = useState<Proyecto[]>([]);
-  const [fusionArrayMisProyectos, setFusionArrayMisProyectos] = useState<Proyecto[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Proyecto[]>([]);
   const [showDropdownProjects, setShowDropdownProjects] = useState(false);
-  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [, setClientes] = useState<Cliente[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
   const [showDropdownClientes, setShowDropdownClientes] = useState(false);
+  const [clientNames, setClientNames] = useState<{ [key: number]: string }>({});
+  const [, setSelectedProject] = useState<Proyecto | null>(null);
+
+  const navigate = useNavigate();
 
   const handleInputChangeProyecto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -49,6 +52,7 @@ const Botones: React.FC = () => {
 
   const handleProjectSelect = (project: Proyecto) => {
     setInputValueProyecto(project.codProyecto);
+    setSelectedProject(project);
     setShowDropdownProjects(false);
   };
 
@@ -78,9 +82,20 @@ const Botones: React.FC = () => {
       const projectsJefes = await getBoss('6');
       const projectsPMO = await getPMO('1644');
       const fusionArray: Proyecto[] = [...projectsJefes, ...projectsPMO];
-      const uniqueProjects = Array.from(new Map(fusionArray.map(project => [project.idProyecto, project]))).map(([id, project]) => project);
-      setArrayJefesProyecto(uniqueProjects);
-      setFusionArrayMisProyectos(uniqueProjects);
+      const uniqueProjects = Array.from(new Map(fusionArray.map(project => [project.idProyecto, project]))).map(([, project]) => project);
+      
+
+      const clientNamesTemp: { [key: number]: string } = {};
+      for (const project of uniqueProjects) {
+        const clientData = await getIdClient(project.idCliente.toString());
+        if (clientData && clientData.length > 0) {
+          clientNamesTemp[project.idCliente] = clientData[0].nombre;
+        }
+      }
+
+      setClientNames(clientNamesTemp);
+      setResultados(uniqueProjects);
+      setShowResults(true);
     } catch (error) {
       console.error('Error al obtener mis proyectos:', error);
     }
@@ -89,17 +104,23 @@ const Botones: React.FC = () => {
   const handleSearchClick = async () => {
     try {
       let projects: Proyecto[] = [];
+      const clientNamesTemp: { [key: number]: string } = {};
 
       if (inputValueProyecto) {
         projects = await getcodprojects(inputValueProyecto);
       } else if (inputValueCliente) {
-        const clients = await getClientes(inputValueCliente);
-        if (clients.length > 0) {
-          const clienteId = clients[0].idCliente; // Tomamos el primer cliente encontrado
-          projects = await getAllProjectsByClientName(clienteId.toString());
+        projects = await getClientName(inputValueCliente);
+      }
+
+
+      for (const project of projects) {
+        const clientData = await getIdClient(project.idCliente.toString());
+        if (clientData && clientData.length > 0) {
+          clientNamesTemp[project.idCliente] = clientData[0].nombre;
         }
       }
 
+      setClientNames(clientNamesTemp);
       setResultados(projects);
       setShowResults(true);
     } catch (error) {
@@ -112,6 +133,10 @@ const Botones: React.FC = () => {
   const handleClientSelect = (client: Cliente) => {
     setInputValueCliente(client.nombre);
     setShowDropdownClientes(false);
+  };
+
+  const handleRowClick = (project: Proyecto) => {
+    navigate(`/gradosAvance/${project.idProyecto}`, { state: { selectedProject: project, clientName: clientNames[project.idCliente] } });
   };
 
   return (
@@ -147,6 +172,7 @@ const Botones: React.FC = () => {
             onChange={handleInputChangeCliente}
             className='searchInput2'
             value={inputValueCliente}
+            onClick={() => setShowDropdownClientes(true)}
           />
           <button className='searchButtonToggle' onClick={() => setShowDropdownClientes(!showDropdownClientes)}>
             ▼
@@ -184,15 +210,17 @@ const Botones: React.FC = () => {
               <tr>
                 <th>Código del proyecto</th>
                 <th>Nombre del proyecto</th>
+                <th>Nombre del cliente</th>
                 <th>Responsable</th>
-                <th>Horas Cooonts Provisional</th>
+                <th>Horas Conts Provisional</th>
               </tr>
             </thead>
             <tbody>
               {resultados.map((proyecto) => (
-                <tr key={proyecto.idProyecto}>
+                <tr key={proyecto.idProyecto} onClick={() => handleRowClick(proyecto)}>
                   <td>{proyecto.codProyecto}</td>
                   <td>{proyecto.nombreProyecto}</td>
+                  <td>{clientNames[proyecto.idCliente] ? clientNames[proyecto.idCliente] : 'N/A'}</td>
                   <td>{proyecto.responsable}</td>
                   <td>{proyecto.horasContsProvisional}</td>
                 </tr>
@@ -204,19 +232,6 @@ const Botones: React.FC = () => {
 
       {showResults && resultados.length === 0 && (
         <p>No se encontraron resultados para la búsqueda.</p>
-      )}
-
-      {arrayJefesProyecto && (
-        <div>
-          <h2>Mis Proyectos (Jefes y PMO)</h2>
-          <ul>
-            {fusionArrayMisProyectos.map((proyecto) => (
-              <li key={proyecto.idProyecto}>
-                {proyecto.codProyecto} - {proyecto.nombreProyecto}
-              </li>
-            ))}
-          </ul>
-        </div>
       )}
     </div>
   );
