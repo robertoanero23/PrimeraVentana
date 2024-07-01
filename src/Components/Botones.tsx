@@ -1,8 +1,7 @@
+import React, { useState } from "react";
 import Body from "./Body";
-import "../style.css/botones.css"
-import { useState, useEffect, SetStateAction } from "react";
+import "../style.css/botones.css";
 import { getBoss, getClientes, getPMO, getcodprojects, getAllProjectsByClientName } from "../rutes/RutasProyectos";
-
 
 interface Proyecto {
   idProyecto: number;
@@ -19,137 +18,157 @@ interface Cliente {
   nombre: string;
 }
 
-export default function Botones() {
-
-  const [data, setData] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-  const [inputValue2] = useState('6');
-  const [inputValue3] = useState('1644');
-  const [inputValue4, setInputValue4] = useState("");
-  const [clientes, setClientes] = useState<Cliente[]>([]);
+const Botones: React.FC = () => {
+  const [inputValueProyecto, setInputValueProyecto] = useState('');
+  const [inputValueCliente, setInputValueCliente] = useState('');
+  const [resultados, setResultados] = useState<Proyecto[]>([]);
+  const [showResults, setShowResults] = useState(false);
   const [arrayJefesProyecto, setArrayJefesProyecto] = useState<Proyecto[]>([]);
-  const [arrayPMOProyecto, setArrayPMOProyecto] = useState<Proyecto[]>([]);
   const [fusionArrayMisProyectos, setFusionArrayMisProyectos] = useState<Proyecto[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Proyecto[]>([]);
+  const [showDropdownProjects, setShowDropdownProjects] = useState(false);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
+  const [showDropdownClientes, setShowDropdownClientes] = useState(false);
 
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const projects = await getcodprojects(inputValue);
-      setData(projects);
-      console.log(projects);
-    };
-
-    fetchData();
-  }, [inputValue]);
-
-  const handleInputChange = (event: { target: { value: SetStateAction<string>; }; }) => {
-    setInputValue(event.target.value);
-  }
-
-  const handleInputChange2 = (event: { target: { value: SetStateAction<string>; }; }) => {
-    setInputValue4(event.target.value);
-    fetchData();
-  }
-
-
-  useEffect(() => {
-
-  }, []);
-
-
-  const fetchData = async () => {
-    
-    const clients: Cliente[] = await getClientes(inputValue4);
-    setClientes(clients);
-    clients.map((c: Cliente) => console.log(c.nombre));
-
-    const projects = await getAllProjectsByClientName(inputValue4);
-    setFusionArrayMisProyectos(projects);
-    console.log(projects);
-
+  const handleInputChangeProyecto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputValueProyecto(value);
+    if (value) {
+      try {
+        const projects: Proyecto[] = await getcodprojects(value);
+        setFilteredProjects(projects);
+        setShowDropdownProjects(true);
+      } catch (error) {
+        console.error('Error al obtener los proyectos:', error);
+      }
+    } else {
+      setShowDropdownProjects(false);
+    }
   };
 
-  const handleButtonClick = async () => {
-    try {
-      const projectsJefes = await getBoss(inputValue2);
-      setArrayJefesProyecto(projectsJefes);
+  const handleProjectSelect = (project: Proyecto) => {
+    setInputValueProyecto(project.codProyecto);
+    setShowDropdownProjects(false);
+  };
 
-      const projectsPMO = await getPMO(inputValue3);
-      setArrayPMOProyecto(projectsPMO);
-
-      const fusionArray: Proyecto[] = [...projectsJefes, ...projectsPMO];
-      const aux: Proyecto[] = Array.from(
-        new Map(fusionArray.map((proyecto) => [proyecto.idProyecto, proyecto]))
-      ).map(([_, proyecto]) => proyecto);
-
-      setFusionArrayMisProyectos(aux);
-
-      console.log(projectsJefes);
-      console.log(projectsPMO);
-      console.log(fusionArray);
-      console.log(aux);
-
-    } catch (error) {
-      console.log(error);
+  const handleInputChangeCliente = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputValueCliente(value);
+    if (value) {
+      fetchClientes(value);
+    } else {
+      setShowDropdownClientes(false);
     }
-  }
+  };
+
+  const fetchClientes = async (search: string) => {
+    try {
+      const clients: Cliente[] = await getClientes(search);
+      setClientes(clients);
+      setFilteredClientes(clients.filter(client => client.nombre.toLowerCase().includes(search.toLowerCase())));
+      setShowDropdownClientes(true);
+    } catch (error) {
+      console.error('Error al obtener los clientes:', error);
+    }
+  };
+
+  const handleMisProyectosClick = async () => {
+    try {
+      const projectsJefes = await getBoss('6');
+      const projectsPMO = await getPMO('1644');
+      const fusionArray: Proyecto[] = [...projectsJefes, ...projectsPMO];
+      const uniqueProjects = Array.from(new Map(fusionArray.map(project => [project.idProyecto, project]))).map(([id, project]) => project);
+      setArrayJefesProyecto(uniqueProjects);
+      setFusionArrayMisProyectos(uniqueProjects);
+    } catch (error) {
+      console.error('Error al obtener mis proyectos:', error);
+    }
+  };
+
+  const handleSearchClick = async () => {
+    try {
+      let projects: Proyecto[] = [];
+
+      if (inputValueProyecto) {
+        projects = await getcodprojects(inputValueProyecto);
+      } else if (inputValueCliente) {
+        const clients = await getClientes(inputValueCliente);
+        if (clients.length > 0) {
+          const clienteId = clients[0].idCliente; // Tomamos el primer cliente encontrado
+          projects = await getAllProjectsByClientName(clienteId.toString());
+        }
+      }
+
+      setResultados(projects);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Error al buscar proyectos o clientes:', error);
+      setResultados([]);
+      setShowResults(false);
+    }
+  };
+
+  const handleClientSelect = (client: Cliente) => {
+    setInputValueCliente(client.nombre);
+    setShowDropdownClientes(false);
+  };
 
   return (
     <div>
-
       <div><Body /></div>
 
-
-
-
-
       <div className='SearchButton'>
-
-        <div >
+        <div>
           <h4 className="label">Código del proyecto</h4>
           <input
             type="text"
-            value={inputValue}
-            onChange={handleInputChange}
+            value={inputValueProyecto}
+            onChange={handleInputChangeProyecto}
             placeholder='Código del proyecto'
             className='searchInput'
-
           />
-
+          {showDropdownProjects && filteredProjects.length > 0 && (
+            <ul className="dropdown">
+              {filteredProjects.map((project) => (
+                <li key={project.idProyecto} onClick={() => handleProjectSelect(project)}>
+                  {project.codProyecto} - {project.nombreProyecto}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-
-        <div >
+        <div>
           <h4 className="label">Cliente</h4>
           <input
             type="text"
             placeholder='Cliente'
-            onChange={handleInputChange2}
+            onChange={handleInputChangeCliente}
             className='searchInput2'
-            value={inputValue4}
+            value={inputValueCliente}
           />
-
-          <button className='searchButtonToggle'>▼</button>
+          <button className='searchButtonToggle' onClick={() => setShowDropdownClientes(!showDropdownClientes)}>
+            ▼
+          </button>
+          {showDropdownClientes && filteredClientes.length > 0 && (
+            <ul className="dropdown">
+              {filteredClientes.map((client, index) => (
+                <li key={index} onClick={() => handleClientSelect(client)}>
+                  {client.nombre}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-
-        <button className='customButton'
-          onClick={handleButtonClick}
-
-          value={inputValue2}
-
-
-        >Mis Proyectos</button>
+        <button className='customButton' onClick={handleMisProyectosClick}>
+          Mis Proyectos
+        </button>
       </div>
-      <button
-        id="btnBuscar"
-        className="btn btnAdd "
-        type="button"
-      >
-        <i className="materialIcons2"
 
-        >search</i>
+      <button id="btnBuscar" className="btn btnAdd" type="button" onClick={handleSearchClick}>
+        <i className="materialIcons2">search</i>
         <span>BUSCAR</span>
       </button>
       <button id="btnVolver" className="btn" type="button">
@@ -157,48 +176,50 @@ export default function Botones() {
         <span>VOLVER</span>
       </button>
 
-
-      {data && (
+      {showResults && resultados.length > 0 && (
         <div>
-          <p> {JSON.stringify(data)}</p>
+          <h2>Resultados de la búsqueda:</h2>
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th>Código del proyecto</th>
+                <th>Nombre del proyecto</th>
+                <th>Responsable</th>
+                <th>Horas Cooonts Provisional</th>
+              </tr>
+            </thead>
+            <tbody>
+              {resultados.map((proyecto) => (
+                <tr key={proyecto.idProyecto}>
+                  <td>{proyecto.codProyecto}</td>
+                  <td>{proyecto.nombreProyecto}</td>
+                  <td>{proyecto.responsable}</td>
+                  <td>{proyecto.horasContsProvisional}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-      )}
-      {clientes && (
-        <div>
-          {clientes.map((cliente, index) => (
-            <p key={index}>
-              {cliente.nombre === inputValue4 && cliente.nombre}
-            </p>
-          ),
-          console.log(inputValue4)
-          )}
-        </div>
       )}
 
+      {showResults && resultados.length === 0 && (
+        <p>No se encontraron resultados para la búsqueda.</p>
+      )}
 
       {arrayJefesProyecto && (
         <div>
-          <p> {JSON.stringify(arrayJefesProyecto)}</p>
+          <h2>Mis Proyectos (Jefes y PMO)</h2>
+          <ul>
+            {fusionArrayMisProyectos.map((proyecto) => (
+              <li key={proyecto.idProyecto}>
+                {proyecto.codProyecto} - {proyecto.nombreProyecto}
+              </li>
+            ))}
+          </ul>
         </div>
-
-      )}
-      {arrayPMOProyecto && (
-        <div>
-          <p> {JSON.stringify(arrayPMOProyecto)}</p>
-        </div>
-
-      )}
-
-
-      {fusionArrayMisProyectos && (
-        <div>
-          <p> {JSON.stringify(fusionArrayMisProyectos)}</p>
-        </div>
-
       )}
     </div>
+  );
+};
 
-  )
-
-}
+export default Botones;

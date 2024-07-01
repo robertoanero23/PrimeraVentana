@@ -85,7 +85,9 @@
     position: absolute;
     height: 30px;
 }
-
+.tabla{
+  background-color: #F8485E;
+}
 
 .customButton{
   padding: 10px 10px;
@@ -135,4 +137,40 @@
   background-color: #444;
   box-shadow: #444;
   transform: translateY(2px);
+}
+.searchInput2 {
+  width: 200px;
+  padding: 8px;
+}
+
+.searchButtonToggle {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: absolute;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: block;
+  background-color: white;
+  max-height: 150px;
+  overflow-y: auto;
+  width: 230px;
+  margin-top: -1rem;
+  z-index: 1051;
+}
+
+
+.dropdown li {
+  padding: 8px;
+  cursor: pointer;
+
+}
+
+.dropdown li:hover {
+  background-color: #f0f0f0;
+  background-color: #5897fb;
+  color: white;
 }
