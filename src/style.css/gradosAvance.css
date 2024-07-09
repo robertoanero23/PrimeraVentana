@@ -128,3 +128,11 @@ th,td {
   width: 10rem;
   margin-bottom: -0.1rem;
 }
+
+.positivePercentage {
+  background-color: #c8e6c9; /* Verde claro */
+}
+
+.negativePercentage {
+  background-color: #ffcdd2; /* Rojo claro */
+}

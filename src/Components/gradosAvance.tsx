@@ -1,182 +1,134 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
-import Body from "./Body";
-import "../style.css/botones.css";
-import { getBoss, getClientes, getPMO, getcodprojects, getClientName, getIdClient } from "../rutes/RutasProyectos";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useLocation } from 'react-router-dom';
+import Header from './Header';
+import SubHeader from './SubHeader';
 
-interface Proyecto {
-  idProyecto: number;
-  idCliente: number;
-  nombreProyecto: string;
-  codProyecto: string;
-  activo: number;
-  responsable: string;
-  horasContsProvisional: number;
+import "../style.css/gradosAvance.css"
+import { getIdproyecto } from '../rutes/RutasProyectos';
+
+interface LocationState {
+  selectedProject: {
+    idProyecto: number;
+    codProyecto: string;
+    nombreProyecto: string;
+    responsable: string;
+  };
+  clientName: string;
 }
 
-interface Cliente {
-  idCliente: number;
-  nombre: string;
+interface GradoAvance {
+  id: number;
+  idProyecto: string;
+  year: string;
+  month: string;
+  day: string;
+  porcentajeAvanceReal: string;
+  porcentajeAvancePrevisto: string;
+  porcentajeAvanceIncurrido: string;
+  porcentajeAvanceRealContraIncurrido: string;
 }
 
-const Botones: React.FC = () => {
-  const [inputValueProyecto, setInputValueProyecto] = useState('');
-  const [inputValueCliente, setInputValueCliente] = useState('');
-  const [resultados, setResultados] = useState<Proyecto[]>([]);
-  const [showResults, setShowResults] = useState(false);
-  const [filteredProjects, setFilteredProjects] = useState<Proyecto[]>([]);
-  const [showDropdownProjects, setShowDropdownProjects] = useState(false);
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
-  const [showDropdownClientes, setShowDropdownClientes] = useState(false);
-  const [clientNames, setClientNames] = useState<{ [key: number]: string }>({});
-  const [, setSelectedProject] = useState<Proyecto | null>(null);
+const GradosAvance: React.FC = () => {
+  const location = useLocation();
+  const { selectedProject, clientName } = location.state as LocationState || {};
 
-  const navigate = useNavigate();
+  const [newGradoAvance, setNewGradoAvance] = useState({
+    idProyecto: selectedProject?.idProyecto.toString() || '',
+    year: '',
+    month: '',
+    day: '',
+    porcentajeAvanceReal: '',
+    porcentajeAvancePrevisto: '',
+    porcentajeAvanceIncurrido: '',
+    porcentajeAvanceRealContraIncurrido: ''
+  });
+
+  const [showForm, setShowForm] = useState(false);
+  const [gradoAvanceData, setGradoAvanceData] = useState<GradoAvance[]>([]);
 
   useEffect(() => {
-    const fetchAllClientes = async () => {
-      try {
-        const clients: Cliente[] = await getClientes('');
-        setClientes(clients);
-        setFilteredClientes(clients);
-        setShowDropdownClientes(true);
-      } catch (error) {
-        console.error('Error al obtener los clientes:', error);
+    const fetchGradoAvanceData = async () => {
+      if (selectedProject?.idProyecto) {
+        const data = await getIdproyecto(selectedProject.idProyecto.toString());
+        setGradoAvanceData(data);
       }
     };
 
-    if (inputValueCliente === '') {
-      fetchAllClientes();
-    }
-  }, [inputValueCliente]);
+    fetchGradoAvanceData();
+  }, [selectedProject]);
 
-  const handleInputChangeProyecto = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputValueProyecto(value);
-    if (value) {
-      try {
-        const projects: Proyecto[] = await getcodprojects(value);
-        setFilteredProjects(projects);
-        setShowDropdownProjects(true);
-      } catch (error) {
-        console.error('Error al obtener los proyectos:', error);
-      }
-    } else {
-      setShowDropdownProjects(false);
-    }
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewGradoAvance({ ...newGradoAvance, [name]: value });
   };
 
-  const handleProjectSelect = (project: Proyecto) => {
-    setInputValueProyecto(project.codProyecto);
-    setSelectedProject(project);
-    setShowDropdownProjects(false);
-  };
-
-  const handleInputChangeCliente = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputValueCliente(value);
-    if (value) {
-      fetchClientes(value);
-    } else {
-      setFilteredClientes(clientes);
-      setShowDropdownClientes(true);
-    }
-  };
-
-  const fetchClientes = async (search: string) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      const clients: Cliente[] = await getClientes(search);
-      setFilteredClientes(clients.filter(client => client.nombre.toLowerCase().includes(search.toLowerCase())));
-      setShowDropdownClientes(true);
+      const response = await fetch('http://127.0.0.1:8000/api/grado-avance/addnuevogradoavance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newGradoAvance),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('Grado de avance añadido con éxito');
+
+
+      const data = await getIdproyecto(selectedProject.idProyecto.toString());
+      setGradoAvanceData(data);
+
     } catch (error) {
-      console.error('Error al obtener los clientes:', error);
+      console.error('Error al añadir el grado de avance:', error);
     }
   };
 
-  const handleMisProyectosClick = async () => {
-    try {
-      const projectsJefes = await getBoss('6');
-      const projectsPMO = await getPMO('1644');
-      const fusionArray: Proyecto[] = [...projectsJefes, ...projectsPMO];
-      const uniqueProjects = Array.from(new Map(fusionArray.map(project => [project.idProyecto, project]))).map(([, project]) => project);
-
-      const clientNamesTemp: { [key: number]: string } = {};
-      for (const project of uniqueProjects) {
-        const clientData = await getIdClient(project.idCliente.toString());
-        if (clientData && clientData.length > 0) {
-          clientNamesTemp[project.idCliente] = clientData[0].nombre;
-        }
-      }
-
-      setClientNames(clientNamesTemp);
-      setResultados(uniqueProjects);
-      setShowResults(true);
-    } catch (error) {
-      console.error('Error al obtener mis proyectos:', error);
-    }
+  const handleShowForm = () => {
+    setShowForm(true);
   };
 
-  const handleSearchClick = async () => {
-    try {
-      let projects: Proyecto[] = [];
-      const clientNamesTemp: { [key: number]: string } = {};
-
-      if (inputValueProyecto) {
-        projects = await getcodprojects(inputValueProyecto);
-      } else if (inputValueCliente) {
-        projects = await getClientName(inputValueCliente);
-      }
-
-      for (const project of projects) {
-        const clientData = await getIdClient(project.idCliente.toString());
-        if (clientData && clientData.length > 0) {
-          clientNamesTemp[project.idCliente] = clientData[0].nombre;
-        }
-      }
-
-      setClientNames(clientNamesTemp);
-      setResultados(projects);
-      setShowResults(true);
-    } catch (error) {
-      console.error('Error al buscar proyectos o clientes:', error);
-      setResultados([]);
-      setShowResults(false);
-    }
+  const getColorClass = (value:any) => {
+    return value >= 0 ? 'positivePercentage' : 'negativePercentage';
   };
 
-  const handleClientSelect = (client: Cliente) => {
-    setInputValueCliente(client.nombre);
-    setShowDropdownClientes(false);
-  };
-
-  const handleRowClick = (project: Proyecto) => {
-    navigate(`/gradosAvance/${project.idProyecto}`, { state: { selectedProject: project, clientName: clientNames[project.idCliente] } });
-  };
 
   return (
     <div>
-      <div><Body /></div>
+      <Header />
+      <SubHeader />
+
+      <div className="flipContainer">
+        Filtro de búsqueda
+        <i className="materialIcons floatLeft">arrow_drop_down</i>
+        <i className="materialIcons floatRight">arrow_drop_down</i>
+      </div>
+
+      <h2 className='proyecto'>Datos del proyecto</h2>
 
       <div className='SearchButton'>
         <div>
           <h4 className="label">Código del proyecto</h4>
           <input
             type="text"
-            value={inputValueProyecto}
-            onChange={handleInputChangeProyecto}
             placeholder='Código del proyecto'
             className='searchInput'
+            value={selectedProject?.codProyecto || ''}
+            readOnly
           />
-          {showDropdownProjects && filteredProjects.length > 0 && (
-            <ul className="dropdown">
-              {filteredProjects.map((project) => (
-                <li key={project.idProyecto} onClick={() => handleProjectSelect(project)}>
-                  {project.codProyecto} - {project.nombreProyecto}
-                </li>
-              ))}
-            </ul>
-          )}
+        </div>
+
+        <div>
+          <h4 className="label">Nombre</h4>
+          <input
+            type="text"
+            placeholder='Nombre'
+            className='searchInput2'
+            value={selectedProject?.nombreProyecto || ''}
+            readOnly
+          />
         </div>
 
         <div>
@@ -184,72 +136,155 @@ const Botones: React.FC = () => {
           <input
             type="text"
             placeholder='Cliente'
-            onChange={handleInputChangeCliente}
             className='searchInput2'
-            value={inputValueCliente}
-            onClick={() => setShowDropdownClientes(true)}
+            value={clientName || ''}
+            readOnly
           />
-          <button className='searchButtonToggle' onClick={() => setShowDropdownClientes(!showDropdownClientes)}>
-            ▼
-          </button>
-          {showDropdownClientes && filteredClientes.length > 0 && (
-            <ul className="dropdown">
-              {filteredClientes.map((client, index) => (
-                <li key={index} onClick={() => handleClientSelect(client)}>
-                  {client.nombre}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
-        <button className='customButton' onClick={handleMisProyectosClick}>
-          Mis Proyectos
-        </button>
+        <div>
+          <h4 className="label">Gerente</h4>
+          <input
+            type="text"
+            placeholder='Gerente'
+            className='searchInput2'
+            value={selectedProject?.responsable || ''}
+            readOnly
+          />
+        </div>
       </div>
 
-      <button id="btnBuscar" className="btn btnAdd" type="button" onClick={handleSearchClick}>
-        <i className="materialIcons2">search</i>
-        <span>BUSCAR</span>
-      </button>
-      <button id="btnVolver" className="btn" type="button">
+      <h2 className='proyecto2'>Histórico grados de avance</h2>
+
+      <div className='GradosAvance'>
+        <button className='btnNuevoGrado' onClick={handleShowForm}>
+          Nuevo Grado de Avance
+        </button>
+
+        {showForm && (
+          <form className='formulario' onSubmit={handleSubmit}>
+            <div className="formGroup">
+              <h4 className="label2">ID Proyecto</h4>
+              <input
+                className='btngrado'
+                type="text"
+                name="idProyecto"
+                value={newGradoAvance.idProyecto}
+                onChange={handleInputChange}
+                readOnly
+              />
+            </div>
+
+            <div className="formGroup">
+              <h4 className="label2">Año</h4>
+              <input
+                className='btngrado'
+                type="text"
+                name="year"
+                value={newGradoAvance.year}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="formGroup">
+              <h4 className="label2">Mes</h4>
+              <input
+                className='btngrado'
+                type="text"
+                name="month"
+                value={newGradoAvance.month}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="formGroup">
+              <h4 className="label2">Día</h4>
+              <input
+                className='btngrado'
+                type="text"
+                name="day"
+                value={newGradoAvance.day}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="formGroup">
+              <h4 className="label2">% Porcentaje Avance Real</h4>
+              <input
+                className='btngrado'
+                type="text"
+                name="porcentajeAvanceReal"
+                value={newGradoAvance.porcentajeAvanceReal}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="formGroup">
+              <h4 className="label2">% Avance Previsto</h4>
+              <input
+                className='btngrado'
+                type="text"
+                name="porcentajeAvancePrevisto"
+                value={newGradoAvance.porcentajeAvancePrevisto}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+
+
+            <button className='btnAvance' type="submit">Añadir Grado de Avance</button>
+          </form>
+        )}
+
+        <div>
+          {gradoAvanceData && gradoAvanceData.length > 0 ? (
+            <table className='tabla'>
+              <thead>
+                <tr>
+                  <th>ID Proyecto</th>
+                  <th>Año</th>
+                  <th>Mes</th>
+                  <th>Día</th>
+                  <th>% Avance Real</th>
+                  <th>% Avance Previsto</th>
+                  <th>% Avance incurrido</th>
+                  <th>% Avance real contra incurrido</th>
+                </tr>
+              </thead>
+              <tbody>
+                {gradoAvanceData.map((grado) => (
+                  <tr key={grado.id}>
+                    <td>{grado.idProyecto}</td>
+                    <td>{grado.year}</td>
+                    <td>{grado.month}</td>
+                    <td>{grado.day}</td>
+                    <td>{grado.porcentajeAvanceReal}</td>
+                    <td>{grado.porcentajeAvancePrevisto}</td>
+                    <td>{grado.porcentajeAvanceIncurrido}</td>
+                    <td className={getColorClass(grado.porcentajeAvanceRealContraIncurrido)}>
+                      {grado.porcentajeAvanceRealContraIncurrido}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No hay datos de grados de avance para este proyecto.</p>
+          )}
+        </div>
+      </div>
+
+      <button id="btnVolver" className="btn" type="button" onClick={() => window.history.back()}>
         <i className="materialIcons2">keyboard_backspace</i>
         <span>VOLVER</span>
       </button>
-
-      {showResults && resultados.length > 0 && (
-        <div>
-          <h2>Resultados de la búsqueda:</h2>
-          <table className="tabla">
-            <thead>
-              <tr>
-                <th>Código del proyecto</th>
-                <th>Nombre del proyecto</th>
-                <th>Nombre del cliente</th>
-                <th>Responsable</th>
-                <th>Horas Conts Provisional</th>
-              </tr>
-            </thead>
-            <tbody>
-              {resultados.map((proyecto) => (
-                <tr key={proyecto.idProyecto} onClick={() => handleRowClick(proyecto)}>
-                  <td>{proyecto.codProyecto}</td>
-                  <td>{proyecto.nombreProyecto}</td>
-                  <td>{clientNames[proyecto.idCliente] ? clientNames[proyecto.idCliente] : 'N/A'}</td>
-                  <td>{proyecto.responsable}</td>
-                  <td>{proyecto.horasContsProvisional}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {showResults && resultados.length === 0 && (
-        <p>No se encontraron resultados para la búsqueda.</p>
-      )}
     </div>
   );
 };
 
-export default Botones;
+export default GradosAvance;

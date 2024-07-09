@@ -234,7 +234,7 @@ const Botones: React.FC = () => {
                 <tr key={proyecto.idProyecto} onClick={() => handleRowClick(proyecto)}>
                   <td>{proyecto.codProyecto}</td>
                   <td>{proyecto.nombreProyecto}</td>
-                  <td>{clientNames[proyecto.idCliente]}</td>
+                  <td>{clientNames[proyecto.idCliente] ? clientNames[proyecto.idCliente] : "N/A"}</td>
                   <td>{proyecto.responsable}</td>
                   <td>{proyecto.horasContsProvisional}</td>
                 </tr>
