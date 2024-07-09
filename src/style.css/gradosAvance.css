@@ -94,6 +94,12 @@
     border-spacing: 2px;
     width: 100%;
 }
+.tabla{
+  border-collapse: collapse;
+  text-indent: initial;
+  border-spacing: 2px;
+  width: 100%;
+}
 th,td {
   padding-bottom: 0px;
   border: 1px solid #ccc;

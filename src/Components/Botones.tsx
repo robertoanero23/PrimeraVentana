@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import Body from "./Body";
 import "../style.css/botones.css";
@@ -26,13 +26,29 @@ const Botones: React.FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [filteredProjects, setFilteredProjects] = useState<Proyecto[]>([]);
   const [showDropdownProjects, setShowDropdownProjects] = useState(false);
-  const [, setClientes] = useState<Cliente[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<Cliente[]>([]);
   const [showDropdownClientes, setShowDropdownClientes] = useState(false);
   const [clientNames, setClientNames] = useState<{ [key: number]: string }>({});
   const [, setSelectedProject] = useState<Proyecto | null>(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAllClientes = async () => {
+      try {
+        const clients: Cliente[] = await getClientes('');
+        setClientes(clients);
+        setFilteredClientes(clients);
+      } catch (error) {
+        console.error('Error al obtener los clientes:', error);
+      }
+    };
+
+    if (inputValueCliente === '') {
+      fetchAllClientes();
+    }
+  }, [inputValueCliente]);
 
   const handleInputChangeProyecto = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -62,14 +78,14 @@ const Botones: React.FC = () => {
     if (value) {
       fetchClientes(value);
     } else {
-      setShowDropdownClientes(false);
+      setFilteredClientes(clientes);
+      setShowDropdownClientes(true);
     }
   };
 
   const fetchClientes = async (search: string) => {
     try {
       const clients: Cliente[] = await getClientes(search);
-      setClientes(clients);
       setFilteredClientes(clients.filter(client => client.nombre.toLowerCase().includes(search.toLowerCase())));
       setShowDropdownClientes(true);
     } catch (error) {
@@ -83,7 +99,6 @@ const Botones: React.FC = () => {
       const projectsPMO = await getPMO('1644');
       const fusionArray: Proyecto[] = [...projectsJefes, ...projectsPMO];
       const uniqueProjects = Array.from(new Map(fusionArray.map(project => [project.idProyecto, project]))).map(([, project]) => project);
-      
 
       const clientNamesTemp: { [key: number]: string } = {};
       for (const project of uniqueProjects) {
@@ -111,7 +126,6 @@ const Botones: React.FC = () => {
       } else if (inputValueCliente) {
         projects = await getClientName(inputValueCliente);
       }
-
 
       for (const project of projects) {
         const clientData = await getIdClient(project.idCliente.toString());
@@ -220,7 +234,7 @@ const Botones: React.FC = () => {
                 <tr key={proyecto.idProyecto} onClick={() => handleRowClick(proyecto)}>
                   <td>{proyecto.codProyecto}</td>
                   <td>{proyecto.nombreProyecto}</td>
-                  <td>{clientNames[proyecto.idCliente] ? clientNames[proyecto.idCliente] : 'N/A'}</td>
+                  <td>{clientNames[proyecto.idCliente]}</td>
                   <td>{proyecto.responsable}</td>
                   <td>{proyecto.horasContsProvisional}</td>
                 </tr>
@@ -231,7 +245,9 @@ const Botones: React.FC = () => {
       )}
 
       {showResults && resultados.length === 0 && (
-        <p>No se encontraron resultados para la búsqueda.</p>
+        <div>
+          <h2>No se encontraron resultados</h2>
+        </div>
       )}
     </div>
   );

@@ -18,16 +18,23 @@ export async function getcodprojects(codProyecto:string) {
 }
 
 
-export async function getClientes(nombreCliente:string) {
+export async function getClientes(nombreCliente: string) {
   let data2 = null;
   
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/cliente/getallclientsname/${nombreCliente}`);
+
+    const endpoint = nombreCliente
+      ? `http://127.0.0.1:8000/api/cliente/getallclientsname/${nombreCliente}`
+      : `http://127.0.0.1:8000/api/cliente/getallclients`;
+
+    const response = await fetch(endpoint);
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
+
     const jsonData = await response.json();
-    const firstFiveElements = jsonData.slice();
+    const firstFiveElements = jsonData.slice(); // Puedes ajustar este límite según sea necesario
     data2 = firstFiveElements;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -36,6 +43,7 @@ export async function getClientes(nombreCliente:string) {
   console.log(data2);
   return data2;
 }
+
 
 
 export async function getBoss(idUsuario:string) {
